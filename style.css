@@ -1,0 +1,543 @@
+:root {
+  --word-hidden-bg: #d8dee6;
+  --word-hidden-fg: #d8dee6;
+  --word-hint-fg: #9aa4af;
+  --editor-font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --editor-font-size: 17px;
+  --editor-line-height: 1.6;
+}
+
+[data-bs-theme="dark"] {
+  --word-hidden-bg: #3a3f45;
+  --word-hidden-fg: #3a3f45;
+  --word-hint-fg: #aab4bf;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  min-height: 100vh;
+}
+
+/* Full-page layout: header/appearance-bar/tabs keep their natural size, and the
+   active tab's editor card stretches to fill whatever vertical space is left. */
+.page-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.flex-fill-area {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-fill-area > .tab-pane {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.flex-fill-area > .tab-pane.active {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-fill-card {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-fill-card > .card-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  /* display: flex; */
+  flex-direction: column;
+}
+
+.edit-screen {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.verse-display {
+  font-family: var(--editor-font-family);
+  font-size: 1.35rem;
+  line-height: 2.1;
+  word-spacing: 0.25em;
+}
+
+.verse-display .word {
+  border-radius: 4px;
+  padding: 0 2px;
+  transition: color 0.1s ease, background-color 0.1s ease;
+}
+
+.verse-display .word-correct {
+  color: #198754;
+  text-decoration: underline;
+  text-decoration-color: #198754;
+  text-decoration-thickness: 2px;
+}
+
+.verse-display .word-wrong {
+  color: #dc3545;
+  text-decoration: underline wavy #dc3545;
+}
+
+/* Keyword-matched words carry their own inline color/background (mirroring the
+   user's VS Code todohighlight.keywords list); the underline above (set via the
+   word-correct/word-wrong classes) still shows through to indicate correctness. */
+.verse-display .word-keyword,
+.editable-area .word-keyword {
+  padding: 0 4px;
+  /* A few of the mirrored VS Code colors are near-white — keep every highlight
+     visible against this page's background regardless of its own color pair. */
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.18);
+}
+
+.editable-area .word-keyword {
+  border-radius: 3px;
+}
+
+.verse-display .word-hint {
+  color: var(--word-hint-fg);
+}
+
+.verse-display .word-hidden {
+  color: var(--word-hidden-fg);
+  background-color: var(--word-hidden-bg);
+}
+
+.verse-display.reveal-all .word-hidden,
+.verse-display.reveal-all .word-hint {
+  color: inherit;
+  background-color: transparent;
+}
+
+#statusMsg.text-success {
+  font-weight: 600;
+}
+
+.editable-area {
+  min-height: 5rem;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  outline: none;
+  font-family: var(--editor-font-family);
+  font-size: var(--editor-font-size);
+  line-height: var(--editor-line-height);
+}
+
+.editable-area.no-wrap {
+  white-space: pre;
+  word-wrap: normal;
+  overflow-x: auto;
+}
+
+.editable-area:empty::before {
+  content: attr(data-placeholder);
+  color: var(--word-hint-fg);
+  pointer-events: none;
+}
+
+.ac-ghost {
+  color: var(--word-hint-fg);
+}
+
+.file-list {
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.file-list .list-group-item {
+  cursor: pointer;
+  font-family: ui-monospace, Consolas, monospace;
+}
+
+.file-list .list-group-item.active {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+  color: #fff;
+}
+
+/* ---- Study panel: docked column (wide) / bottom sheet (narrow) ---- */
+:root {
+  --panel-w: 420px;
+  --sheet-h: 45vh;
+}
+
+@media (min-width: 992px) {
+  body {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .page-layout {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .study-panel {
+    position: sticky;
+    top: 0;
+    align-self: flex-start;
+    flex: 0 0 var(--panel-w);
+    width: var(--panel-w);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--bs-body-bg, #fff);
+    border-left: 1px solid rgba(0, 0, 0, 0.15);
+  }
+
+  .study-panel.d-none {
+    display: none !important;
+  }
+
+  .panel-resizer {
+    position: absolute;
+    left: -4px;
+    top: 0;
+    bottom: 0;
+    width: 9px;
+    cursor: col-resize;
+    z-index: 2;
+    touch-action: none;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .study-panel {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: var(--sheet-h);
+    display: flex;
+    flex-direction: column;
+    background-color: var(--bs-body-bg, #fff);
+    border-top: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 14px 14px 0 0;
+    box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.2);
+    z-index: 1050;
+  }
+
+  .study-panel.d-none {
+    display: none !important;
+  }
+
+  /* Keep the editor above the sheet instead of underneath it. */
+  body.panel-open .page-layout {
+    height: calc(100vh - var(--sheet-h));
+    overflow-y: auto;
+  }
+
+  .panel-resizer {
+    height: 18px;
+    flex: 0 0 18px;
+    cursor: row-resize;
+    touch-action: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .panel-resizer::after {
+    content: '';
+    width: 40px;
+    height: 4px;
+    border-radius: 2px;
+    background-color: rgba(108, 117, 125, 0.5);
+  }
+}
+
+.panel-resizer:hover,
+.panel-resizer:focus-visible,
+body.panel-resizing .panel-resizer {
+  background-color: rgba(13, 110, 253, 0.25);
+  outline: none;
+}
+
+body.panel-resizing {
+  user-select: none;
+}
+
+[data-bs-theme="dark"] .study-panel {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.easton-popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+}
+
+[data-bs-theme="dark"] .easton-popup-header {
+  border-bottom-color: rgba(255, 255, 255, 0.12);
+}
+
+.easton-popup-body {
+  padding: 0.6rem;
+  overflow-y: auto;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* ---- Clickable references + hover card ---- */
+a.ref i {
+  font-size: 0.85em;
+}
+
+.settings-menu {
+  width: 290px;
+  max-width: calc(100vw - 32px);
+}
+
+.ref-card p,
+.conc-line {
+  font-family: var(--editor-font-family);
+}
+
+a.ref {
+  color: #0d6efd;
+  text-decoration: underline dotted;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+a.ref:hover,
+a.ref:focus-visible {
+  text-decoration: underline;
+}
+
+.easton-ref {
+  margin-left: 0.35rem;
+  font-weight: 400;
+}
+
+.conc-line {
+  padding: 0.15rem 0;
+}
+
+.ref-card {
+  position: fixed;
+  z-index: 2000;
+  width: 340px;
+  max-width: calc(100vw - 16px);
+  max-height: 50vh;
+  overflow-y: auto;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.88rem;
+  background-color: var(--bs-body-bg, #fff);
+  color: var(--bs-body-color, #212529);
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+[data-bs-theme="dark"] .ref-card {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.ref-card p {
+  margin: 0 0 0.35rem;
+}
+
+.ref-card sup {
+  color: #6c757d;
+  font-weight: 600;
+}
+
+.ref-card-title {
+  font-weight: 700;
+  color: #0d6efd;
+  margin-bottom: 0.3rem;
+}
+
+.ref-card-actions {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+}
+
+.easton-section-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #6c757d;
+  margin: 0.5rem 0 0.3rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.easton-section-title:first-child {
+  margin-top: 0;
+}
+
+.easton-count {
+  background-color: rgba(108, 117, 125, 0.18);
+  border-radius: 10px;
+  padding: 0.05rem 0.45rem;
+  font-weight: 600;
+  font-size: 0.7rem;
+}
+
+[data-bs-theme="dark"] .easton-section-title {
+  color: #9aa4af;
+}
+
+.easton-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-bottom: 0.6rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+[data-bs-theme="dark"] .easton-tabs {
+  border-bottom-color: rgba(255, 255, 255, 0.12);
+}
+
+.easton-tab {
+  border: 1px solid rgba(13, 110, 253, 0.25);
+  background-color: transparent;
+  color: #495057;
+  border-radius: 999px;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+[data-bs-theme="dark"] .easton-tab {
+  color: #c0c7cf;
+  border-color: rgba(13, 110, 253, 0.4);
+}
+
+.easton-tab:hover {
+  background-color: rgba(13, 110, 253, 0.08);
+}
+
+.easton-tab.active {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+  color: #fff;
+}
+
+.easton-tab.active .easton-count {
+  background-color: rgba(255, 255, 255, 0.25);
+  color: #fff;
+}
+
+.easton-entry {
+  font-size: 0.85rem;
+  border-radius: 6px;
+  background-color: rgba(13, 110, 253, 0.06);
+  border: 1px solid rgba(13, 110, 253, 0.15);
+  margin-bottom: 0.35rem;
+  overflow: hidden;
+}
+
+[data-bs-theme="dark"] .easton-entry {
+  background-color: rgba(13, 110, 253, 0.12);
+  border-color: rgba(13, 110, 253, 0.28);
+}
+
+.easton-entry .easton-term {
+  font-weight: 600;
+  color: #0d6efd;
+  padding: 0.35rem 0.6rem;
+  cursor: pointer;
+  list-style: none;
+  display: list-item;
+}
+
+.easton-entry .easton-term::-webkit-details-marker {
+  display: none;
+}
+
+.easton-entry .easton-term::before {
+  content: '\F285';
+  font-family: 'bootstrap-icons';
+  font-size: 0.8em;
+  margin-right: 0.35rem;
+  display: inline-block;
+  width: 1em;
+  color: #6c757d;
+}
+
+.easton-entry[open] > .easton-term::before {
+  content: '\F282';
+}
+
+.easton-entry .easton-text {
+  color: #5f6368;
+  padding: 0 0.6rem 0.5rem;
+  max-height: 50vh;
+  overflow-y: auto;
+  white-space: pre-line;
+}
+
+[data-bs-theme="dark"] .easton-entry .easton-text {
+  color: #c0c7cf;
+}
+
+.concordance-meaning {
+  font-style: italic;
+  padding-bottom: 0.35rem;
+  margin-bottom: 0.35rem;
+  border-bottom: 1px dashed rgba(0, 0, 0, 0.12);
+}
+
+[data-bs-theme="dark"] .concordance-meaning {
+  border-bottom-color: rgba(255, 255, 255, 0.15);
+}
+
+.easton-translating {
+  font-style: italic;
+  opacity: 0.7;
+  margin-bottom: 0.3rem;
+}
+
+.easton-translate-error {
+  color: #dc3545;
+  font-size: 0.78rem;
+  margin-bottom: 0.3rem;
+}
+
+#panelToggle {
+  white-space: nowrap;
+}
+
+.easton-size {
+  margin-left: 0.4rem;
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: #6c757d;
+}
+
+.easton-pending {
+  padding: 0.75rem;
+  font-size: 0.85rem;
+  color: #6c757d;
+  text-align: center;
+}

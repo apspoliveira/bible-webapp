@@ -1,0 +1,7 @@
+__pycache__/
+*.py[cod]
+
+# Local notes and personal-use EGW scripture index; do not upload these files.
+data/md_files.js
+data/egw_index.js
+data/*.pdf
